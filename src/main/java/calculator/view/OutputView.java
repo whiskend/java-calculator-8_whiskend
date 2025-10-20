@@ -19,4 +19,9 @@ public class OutputView {
     public static void printSplitResult(String[] numbers){
         System.out.println("분리 결과: " + Arrays.toString(numbers));
     }
+
+    // 최종 결과 출력
+    public static void printResult(int value) {
+        System.out.println("결과: " + value);
+    }
 }

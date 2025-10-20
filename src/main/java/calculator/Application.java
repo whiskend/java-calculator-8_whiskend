@@ -12,5 +12,8 @@ public class Application {
         //기본 구분자 + 커스텀 구분자 분리 테스트
         String[] numbers = StringAddCalculator.split(input);
         OutputView.printSplitResult(numbers);
+
+        int result = StringAddCalculator.add(input);
+        OutputView.printResult(result);
     }
 }
