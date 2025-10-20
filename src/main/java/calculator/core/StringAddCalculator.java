@@ -83,7 +83,7 @@ public class StringAddCalculator {
     }
 
     /**
-     * 리터럴 "\\n"을 경계로 커스텀 구분자를 추출하고, 이후 숫자 영역을 해당 구분자로 split 한다.
+     * 리터럴 "\\n"을 경계로 커스텀 구분자를 추출하고, 이후 숫자 영역을 해당 구분자와 기본 구분자로 split 한다.
      */
     private static String[] splitWithCustomDelimiterLiteralNewline(String input) {
         int boundaryIndex = input.indexOf(ESCAPED_NEWLINE);
@@ -94,7 +94,11 @@ public class StringAddCalculator {
         String customDelimiter = extractCustomDelimiter(input, boundaryIndex);
         String numbersPart = extractNumbersPartAfterEscapedNewline(input, boundaryIndex);
 
-        return numbersPart.split(Pattern.quote(customDelimiter));
+        // 커스텀 구분자와 기본 구분자를 함께 처리한다.
+        // 예: //;\n1;2:3  -> [1, 2, 3]
+        String combinedPattern = Pattern.quote(customDelimiter) + "|" + DEFAULT_DELIMITERS;
+
+        return numbersPart.split(combinedPattern);
     }
 
     private static String extractCustomDelimiter(String input, int endExclusive) {
