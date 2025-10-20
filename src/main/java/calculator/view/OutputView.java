@@ -1,5 +1,7 @@
 package calculator.view;
 
+import java.util.Arrays;
+
 public class OutputView {
     private OutputView() {
         // 객체 생성 방지
@@ -11,5 +13,10 @@ public class OutputView {
 
     public static void printInput(String input){
         System.out.println("입력값 확인: " + input);
+    }
+
+    // split 결과 테스트
+    public static void printSplitResult(String[] numbers){
+        System.out.println("분리 결과: " + Arrays.toString(numbers));
     }
 }
