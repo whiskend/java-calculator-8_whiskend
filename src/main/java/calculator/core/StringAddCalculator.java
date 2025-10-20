@@ -48,7 +48,7 @@ public class StringAddCalculator {
         }
 
         if (hasCustomHeader(input)) {
-            return splitWithCustomDelimiterLiteralNewline(input);
+            return splitWithCustomDelimiter(input);
         }
 
         return input.split(DEFAULT_DELIMITERS);
@@ -82,22 +82,27 @@ public class StringAddCalculator {
         return input.startsWith("//");
     }
 
-    /**
-     * 리터럴 "\\n"을 경계로 커스텀 구분자를 추출하고, 이후 숫자 영역을 해당 구분자와 기본 구분자로 split 한다.
-     */
-    private static String[] splitWithCustomDelimiterLiteralNewline(String input) {
-        int boundaryIndex = input.indexOf(ESCAPED_NEWLINE);
-        if (boundaryIndex == -1) {
+    private static String[] splitWithCustomDelimiter(String input) {
+        // 실제 줄바꿈("\n")과 리터럴("\\n")을 모두 지원한다.
+        int realNewlineIndex = input.indexOf("\n");    // 실제 줄바꿈: 길이 1
+        int escapedNewlineIndex = input.indexOf(ESCAPED_NEWLINE); // 리터럴: 길이 2
+
+        boolean hasReal = realNewlineIndex >= 0;
+        boolean hasEscaped = escapedNewlineIndex >= 0;
+
+        if (!hasReal && !hasEscaped) {
             throw new IllegalArgumentException("잘못된 커스텀 구분자 형식입니다. (\\n 누락)");
         }
 
+        boolean useReal = hasReal && (!hasEscaped || realNewlineIndex < escapedNewlineIndex);
+        int boundaryIndex = useReal ? realNewlineIndex : escapedNewlineIndex;
+        int skipLength = useReal ? 1 : ESCAPED_NEWLINE.length();
+
         String customDelimiter = extractCustomDelimiter(input, boundaryIndex);
-        String numbersPart = extractNumbersPartAfterEscapedNewline(input, boundaryIndex);
+        String numbersPart = input.substring(boundaryIndex + skipLength);
 
-        // 커스텀 구분자와 기본 구분자를 함께 처리한다.
-        // 예: //;\n1;2:3  -> [1, 2, 3]
+        // 커스텀 구분자와 기본 구분자(, :)를 함께 처리
         String combinedPattern = Pattern.quote(customDelimiter) + "|" + DEFAULT_DELIMITERS;
-
         return numbersPart.split(combinedPattern);
     }
 
